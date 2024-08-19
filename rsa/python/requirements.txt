@@ -1,0 +1,48 @@
+biopython==1.83
+bleach==6.1.0
+bokeh==3.4.1
+Bottleneck @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_2bxpizxa3c/croot/bottleneck_1707864819812/work
+certifi==2024.2.2
+charset-normalizer==3.3.2
+colorcet==3.1.0
+contourpy==1.2.0
+cycler==0.12.1
+fonttools==4.50.0
+holoviews==1.18.3
+idna==3.7
+Jinja2==3.1.4
+kiwisolver==1.4.5
+linkify-it-py==2.0.3
+Markdown==3.6
+markdown-it-py==3.0.0
+MarkupSafe==2.1.5
+matplotlib==3.8.3
+mdit-py-plugins==0.4.1
+mdurl==0.1.2
+networkx==3.3
+nibabel==5.2.1
+numexpr @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_45yefq0kt6/croot/numexpr_1696515289183/work
+numpy @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a51i_mbs7m/croot/numpy_and_numpy_base_1708638620867/work/dist/numpy-1.26.4-cp310-cp310-macosx_11_0_arm64.whl#sha256=c4b11b3c4d4fdb810039503fe01f311ade06cd1d675fcd6d208800a393f19b69
+packaging==24.0
+pandas @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_988rx6x546/croot/pandas_1709590494976/work/dist/pandas-2.2.1-cp310-cp310-macosx_11_0_arm64.whl#sha256=2bba141f1a53413635b4cd2cb450f7b50c13ec2f4303ad894adb443cbc25431f
+panel==1.4.2
+param==2.1.0
+pillow==10.3.0
+pyCirclize==1.4.0
+pyparsing==3.1.2
+python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+pytz @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_6btwyyj8a1/croot/pytz_1695131592184/work
+pyviz_comms==3.0.2
+PyYAML==6.0.1
+requests==2.31.0
+scipy @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_41w43uybvr/croot/scipy_1710947318888/work/dist/scipy-1.12.0-cp310-cp310-macosx_11_0_arm64.whl#sha256=a011982064488efc94ad4ea81da698b80728b5ff84fa64d19d0e87ceca8e1774
+seaborn==0.13.2
+six @ file:///tmp/build/80754af9/six_1644875935023/work
+tornado==6.4
+tqdm==4.66.4
+typing_extensions==4.11.0
+tzdata @ file:///croot/python-tzdata_1690578112552/work
+uc-micro-py==1.0.3
+urllib3==2.2.1
+webencodings==0.5.1
+xyzservices==2024.4.0
