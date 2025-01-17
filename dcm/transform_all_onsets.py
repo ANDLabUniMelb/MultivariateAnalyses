@@ -1,6 +1,7 @@
 # This script creates onset files
 
 import os
+import numpy as np
 import pandas as pd
 from scipy.io import savemat
 pd.options.mode.chained_assignment = None  # Disable warning
@@ -106,15 +107,28 @@ mappings = {
 }
 
 for condition, df in final_dfs.items():
-    condition_output_dir = os.path.join(base_output_dir, condition)
+    condition_output_dir = os.path.join(base_output_dir, condition.upper())
     os.makedirs(condition_output_dir, exist_ok=True)
     custom_order = mappings[condition]
     for subject_id, group in df.groupby("subject_id"):
+        names_array = np.empty((1, len(custom_order)), dtype=object)
+        names_array[0, :] = custom_order
+        # 2) Create 1 x N object arrays for onsets and durations
+        onsets_array = np.empty((1, len(custom_order)), dtype=object)
+        durations_array = np.empty((1, len(custom_order)), dtype=object)
+        # 3) Fill each cell with the relevant lists
+        for i, name in enumerate(custom_order):
+            these_onsets = group.loc[group["name"] == name, "onset"].tolist()
+            these_durations = group.loc[group["name"] == name, "duration"].tolist()
+            onsets_array[0, i] = these_onsets
+            durations_array[0, i] = these_durations
+        # 4) Build the final dict for savemat
         mat_data = {
-            "names": [custom_order],
-            "onsets": [group.loc[group["name"] == name, "onset"].tolist() for name in custom_order],
-            "durations": [group.loc[group["name"] == name, "duration"].tolist() for name in custom_order],
+            "names": names_array,
+            "onsets": onsets_array,
+            "durations": durations_array,
         }
+        # 5) Save and report
         output_path = os.path.join(condition_output_dir, f"subject_{subject_id}.mat")
         savemat(output_path, mat_data)
         print(f"Saved: {output_path}")
