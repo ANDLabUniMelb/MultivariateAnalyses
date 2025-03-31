@@ -1,4 +1,4 @@
-# This script creates onset files
+# This script creates onset files for run 1 only
 
 import os
 import numpy as np
@@ -6,10 +6,10 @@ import pandas as pd
 from scipy.io import savemat
 pd.options.mode.chained_assignment = None  # Disable warning
 
-base_output_dir = '/Users/joecussen/Documents/Jobs/unimelb/projects/dcm/data/onsets_017'
+base_output_dir = '/Users/joecussen/Documents/Jobs/unimelb/projects/dcm/data/onsets_0306'
 
 # Define paths and parameters
-rounds = [1, 2, 3, 4]
+round_num = 1
 onsets_parent_path = "/Users/joecussen/Documents/Jobs/unimelb/projects/dcm/data/onsets_type"
 confounds_path = '/Users/joecussen/Documents/Jobs/unimelb/projects/dcm/scratch/confounds_summary.csv'
 tr = 1.12
@@ -17,48 +17,27 @@ tr = 1.12
 # Load and process onset files
 dataframes, empty_files = [], []
 
-for round_num in rounds:
-    onsets_path = f"{onsets_parent_path}/R{round_num}"
-    for file_name in filter(lambda f: f.endswith(".txt"), os.listdir(onsets_path)):
-        file_path = os.path.join(onsets_path, file_name)
-        df = pd.read_csv(file_path, sep='\t', header=None, names=['onset', 'duration', 'parametric_mod'])
+onsets_path = f"{onsets_parent_path}/R{round_num}"
+for file_name in filter(lambda f: f.endswith(".txt"), os.listdir(onsets_path)):
+    file_path = os.path.join(onsets_path, file_name)
+    df = pd.read_csv(file_path, sep='\t', header=None, names=['onset', 'duration', 'parametric_mod'])
 
-        if df.empty:
-            empty_files.append(f'R{round_num}/{file_name}')
-            continue
+    if df.empty:
+        empty_files.append(f'R{round_num}/{file_name}')
+        continue
 
-        df['filename'] = file_name
-        df['round'] = round_num
-        df['subject_id'] = df['filename'].str.extract(r'sub(\d+)').astype(int)
-        df['first_pres'] = (~df['filename'].str.contains(r'\.p\.')).astype(int)
-        df['stim'] = df['filename'].str.extract(r'^([^._]+)')[0]
-        dataframes.append(df)
+    df['filename'] = file_name
+    df['round'] = round_num
+    df['subject_id'] = df['filename'].str.extract(r'sub(\d+)').astype(int)
+    df['first_pres'] = (~df['filename'].str.contains(r'\.p\.')).astype(int)
+    df['stim'] = df['filename'].str.extract(r'^([^._]+)')[0]
+    dataframes.append(df)
 
 onsets_df = (
     pd.concat(dataframes, ignore_index=True)
     .query('onset != duration')
     .sort_values(['subject_id', 'round', 'onset'])
     .reset_index(drop=True)
-)
-
-# Load and process confounds
-confounds_df = (
-    pd.read_csv(confounds_path, header=None, names=['filepath', 'num_rows'])
-    .assign(
-        subject_id=lambda df: df['filepath'].str.extract(r'sub-(\d+)').astype(int),
-        round=lambda df: df['filepath'].str.extract(r'run-(\d+)').astype(int),
-        round_time_total=lambda df: df['num_rows'] * tr
-    )
-    .sort_values(['subject_id', 'round'])
-)
-confounds_df['start_time_offset'] = confounds_df.groupby('subject_id')['round_time_total'].cumsum().shift(1,
-                                                                                                          fill_value=0)
-
-# Merge onset and confound data
-combined_df = (
-    pd.merge(onsets_df, confounds_df, on=['subject_id', 'round'])
-    .assign(adjusted_onset=lambda df: df['onset'] + df['start_time_offset'])
-    [['subject_id', 'round', 'adjusted_onset', 'duration', 'stim', 'first_pres']]
 )
 
 # Apply mappings to add categorisations
@@ -81,13 +60,14 @@ mappings = {
 flat_mappings = {key: {stim: category for category, stimuli in value.items() for stim in stimuli} for key, value in
                  mappings.items()}
 for column, mapping in flat_mappings.items():
-    combined_df[column] = combined_df['stim'].map(mapping)
+    onsets_df[column] = onsets_df['stim'].map(mapping)
 
 #%% create task dataframe
-task_df = combined_df[['subject_id', 'adjusted_onset', 'duration']].copy()
+onsets_df['adjusted_onset'] = onsets_df['onset']
+task_df = onsets_df[['subject_id', 'adjusted_onset', 'duration']].copy()
 task_df['name'] = 'task'
 task_df.columns = ['subject_id', 'onset', 'duration', 'name']
-condition_df = combined_df[combined_df['first_pres'] == 1]
+condition_df = onsets_df[onsets_df['first_pres'] == 1]
 conditions = ['aniweap', 'safety', 'extint']
 final_dfs = {}
 
